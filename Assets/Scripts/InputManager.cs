@@ -7,11 +7,6 @@ public class InputManager : MonoBehaviour
 {
     private GameInput gameI;
 
-    private void Awake()
-    {
-        gameI = new GameInput();
-    }
-
     [Inject]
     public void Construct(GameInput input)
     {
@@ -21,24 +16,19 @@ public class InputManager : MonoBehaviour
     private void OnEnable()
     {
         gameI.Enable();
-        gameI.Player.Move.performed += OnMove;
+
+        gameI.Player.Jump.performed += OnJump;
     }
 
     private void OnDisable()
     {
-        gameI.Player.Move.performed -= OnMove;
-        gameI.Disable();
+        gameI.Player.Jump.performed -= OnJump;
     }
 
-    private void OnMove(InputAction.CallbackContext ctx)
+    private void OnJump(InputAction.CallbackContext ctx)
     {
-        Vector2 input = ctx.ReadValue<Vector2>();
-        Debug.Log("Move Input: " + input);
+        JumpPressed?.Invoke();
     }
-}
 
-
-public interface IInputService
-{
-    GameInput Input { get; }
+    public event Action JumpPressed;
 }
