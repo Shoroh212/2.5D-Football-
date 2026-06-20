@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
 using TMPro;
+using System.ComponentModel.Design.Serialization;
+using System.Threading.Tasks;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,6 +12,9 @@ public class GameManager : MonoBehaviour
 
     private float _timeLeft = 120f; // 2 минуты
     private bool _isRunning = true;
+
+
+    [SerializeField] private GameObject _endGamePanel;
 
     private void Update()
     {
@@ -24,10 +29,22 @@ public class GameManager : MonoBehaviour
             _isRunning = false;
 
             Debug.Log("Время вышло!");
-            // Здесь можно завершить матч
+           _endGamePanel.SetActive(true);
+
         }
 
         UpdateTimerUI();
+    }
+
+    public async Task RestartGameAsync()
+    {
+        await Task.Delay(2000); // Задержка перед перезагрузкой сцены
+        _isRunning = true;
+        _timeLeft = 120f;
+        _endGamePanel.SetActive(false);
+        // Перезагрузка сцены
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        await Task.Delay(100);
     }
 
     private void UpdateTimerUI()
