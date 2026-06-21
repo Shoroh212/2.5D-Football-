@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
@@ -7,24 +6,22 @@ public class InputManager : MonoBehaviour
 {
     private GameInput gameI;
     private Rigidbody rb;
+    private Animator animator;
 
+    [SerializeField] private float moveSpeed = 5f;
 
-  [SerializeField] private float moveSpeed = 5f;
     private Vector2 moveInput;
-
-
-  
-   private int jumpCount= 0;
+    private int jumpCount = 0;
 
     private void Awake()
     {
         gameI = new GameInput();
-        gameI.Player.Move.performed += context => OnMove(context);
     }
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     [Inject]
@@ -39,61 +36,79 @@ public class InputManager : MonoBehaviour
 
         gameI.Player.Move.performed += OnMove;
         gameI.Player.Move.canceled += OnMove;
+
         gameI.Player.Jump.performed += OnJump;
 
-
+        
+       gameI.Player.Kick.performed += OnKick;
     }
 
     private void OnDisable()
     {
-
         gameI.Player.Move.performed -= OnMove;
         gameI.Player.Move.canceled -= OnMove;
+
         gameI.Player.Jump.performed -= OnJump;
+
+     
+        gameI.Player.Kick.performed -= OnKick;
+
         gameI.Disable();
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
     {
-       
         moveInput = ctx.ReadValue<Vector2>();
 
+        bool isRunning = Mathf.Abs(moveInput.x) > 0.01f;
+        animator.SetBool("IsRun", isRunning);
+
+        // Flip 
+        if (moveInput.x > 0)
+        {
+            transform.rotation = Quaternion.Euler(0, 90, 0);
+        }
+        else if (moveInput.x < 0)
+        {
+            transform.rotation = Quaternion.Euler(0, -90, 0);
+        }
     }
 
     private void OnJump(InputAction.CallbackContext ctx)
     {
-
-        if ( jumpCount < 2)
+        if (jumpCount < 2)
         {
             rb.AddForce(Vector3.up * 4f, ForceMode.Impulse);
-            jumpCount += 1;
+            jumpCount++;
 
+            animator.SetBool("IsJump", true);
         }
-      
-    
     }
 
+    private void OnKick(InputAction.CallbackContext ctx)
+    {
+        if (ctx.performed)
+        {
+            animator.SetTrigger("Kick");
+        }
+    }
     private void FixedUpdate()
     {
-        if (moveInput.x == 0) return;
-
         Vector3 velocity = rb.linearVelocity;
         velocity.x = moveInput.x * moveSpeed;
         rb.linearVelocity = velocity;
     }
 
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Ground"))
         {
-          
             jumpCount = 0;
+
+            animator.SetBool("IsJump", false);
         }
     }
-
 }
-
 
 public interface IInputService
 {
