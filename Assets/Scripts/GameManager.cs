@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     private bool _isRunning = true;
 
 
+
     [SerializeField] private GameObject _endGamePanel;
 
     private void Update()
@@ -30,7 +31,7 @@ public class GameManager : MonoBehaviour
 
 
             Debug.Log("Время вышло!");
-           _endGamePanel.SetActive(true);
+            SceneManager.LoadScene(0);
 
         }
 

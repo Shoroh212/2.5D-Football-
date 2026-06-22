@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
 
-public class InputManager : MonoBehaviour
+public class InputManager1 : MonoBehaviour
 {
     private GameInput gameI;
     private Rigidbody rb;
@@ -12,9 +12,8 @@ public class InputManager : MonoBehaviour
 
     private Vector2 moveInput;
     private int jumpCount = 0;
-
-
     public AudioSource audioKick;
+
     private void Awake()
     {
         gameI = new GameInput();
@@ -38,25 +37,25 @@ public class InputManager : MonoBehaviour
     {
         gameI.Enable();
 
-        gameI.Player.Move.performed += OnMove;
-        gameI.Player.Move.canceled += OnMove;
+        gameI.Player2.Move.performed += OnMove;
+        gameI.Player2.Move.canceled += OnMove;
 
 
-        gameI.Player.Jump.performed += OnJump;
+        gameI.Player2  .Jump.performed += OnJump;
 
-        
-       gameI.Player.Kick.performed += OnKick;
+
+        gameI.Player2.Kick.performed += OnKick;
     }
 
     private void OnDisable()
     {
-        gameI.Player.Move.performed -= OnMove;
-        gameI.Player.Move.canceled -= OnMove;
+        gameI.Player2.Move.performed -= OnMove;
+        gameI.Player2.Move.canceled -= OnMove;
 
-        gameI.Player.Jump.performed -= OnJump;
+        gameI.Player2.Jump.performed -= OnJump;
 
-     
-        gameI.Player.Kick.performed -= OnKick;
+
+        gameI.Player2.Kick.performed -= OnKick;
 
         gameI.Disable();
     }
@@ -93,7 +92,8 @@ public class InputManager : MonoBehaviour
     private void OnKick(InputAction.CallbackContext ctx)
     {
         if (ctx.performed)
-        { animator.SetTrigger("Kick");
+        {
+            animator.SetTrigger("Kick");
             audioKick.Play();
             Collider[] hits = Physics.OverlapSphere(transform.position, 1.5f);
             foreach (var hit in hits)
@@ -128,9 +128,4 @@ public class InputManager : MonoBehaviour
             animator.SetBool("IsJump", false);
         }
     }
-}
-
-public interface IInputService
-{
-    GameInput Input { get; }
 }
