@@ -16,6 +16,8 @@ public class InputManager : MonoBehaviour
     private void Awake()
     {
         gameI = new GameInput();
+
+
     }
 
     private void Start()
@@ -36,6 +38,7 @@ public class InputManager : MonoBehaviour
 
         gameI.Player.Move.performed += OnMove;
         gameI.Player.Move.canceled += OnMove;
+
 
         gameI.Player.Jump.performed += OnJump;
 
@@ -63,7 +66,7 @@ public class InputManager : MonoBehaviour
         bool isRunning = Mathf.Abs(moveInput.x) > 0.01f;
         animator.SetBool("IsRun", isRunning);
 
-        // Flip 
+        // флип
         if (moveInput.x > 0)
         {
             transform.rotation = Quaternion.Euler(0, 90, 0);
@@ -88,8 +91,22 @@ public class InputManager : MonoBehaviour
     private void OnKick(InputAction.CallbackContext ctx)
     {
         if (ctx.performed)
-        {
-            animator.SetTrigger("Kick");
+        { animator.SetTrigger("Kick");
+            Collider[] hits = Physics.OverlapSphere(transform.position, 1.5f);
+            foreach (var hit in hits)
+            {
+                if (hit.CompareTag("Ball"))
+                {
+                    Rigidbody ballRb = hit.GetComponent<Rigidbody>();
+                    if (ballRb)
+                    {
+                        Vector3 kickDir = (hit.transform.position - transform.position).normalized;
+                        kickDir.y = 0.3f;
+                        ballRb.AddForce(kickDir * 9f, ForceMode.Impulse);
+                    }
+                    break;
+                }
+            }
         }
     }
     private void FixedUpdate()

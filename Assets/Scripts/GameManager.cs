@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
             _timeLeft = 0;
             _isRunning = false;
 
+
             Debug.Log("Время вышло!");
            _endGamePanel.SetActive(true);
 
@@ -38,11 +39,11 @@ public class GameManager : MonoBehaviour
 
     public async Task RestartGameAsync()
     {
-        await Task.Delay(2000); // Задержка перед перезагрузкой сцены
+        await Task.Delay(2000); 
         _isRunning = true;
         _timeLeft = 120f;
         _endGamePanel.SetActive(false);
-        // Перезагрузка сцены
+      
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         await Task.Delay(100);
     }
